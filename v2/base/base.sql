@@ -9,7 +9,7 @@ create table Membre(
     email VARCHAR(100) UNIQUE NOT NULL,
     ville VARCHAR(50) NOT NULL,
     mot_de_passe VARCHAR(255) NOT NULL,
-    image_profile VARCHAR(255) DEFAULT 'default.jpg'
+    image_profile VARCHAR(255) DEFAULT '../assets/img/defaut.png'
 );
 
 create table categorie_objet(
@@ -28,7 +28,7 @@ create table Objet(
 create table images_objet(
     id_image INT AUTO_INCREMENT PRIMARY KEY,
     id_objet INT,
-    nom_image VARCHAR(255) NOT NULL,
+    nom_image VARCHAR(255)  VARCHAR(255) DEFAULT '../assets/img/default.png',
     FOREIGN KEY (id_objet) REFERENCES Objet(id_objet)
 );
 
@@ -107,14 +107,14 @@ INSERT INTO Objet (nom_objet, id_membre, id_categorie) VALUES
 ('Cric hydraulique', 4, 3);
 
 INSERT INTO images_objet (id_objet, nom_image) VALUES
-(1, 'seche_cheveux.jpg'),
-(3, 'perceuse.jpg'),
-(11, 'tondeuse.jpg'),
-(14, 'pompe_voiture.jpg'),
-(21, 'brosse_lissante.jpg'),
-(26, 'robot_patissier.jpg'),
-(31, 'ponceuse.jpg'),
-(33, 'fouet.jpg');
+(1, '../assets/img/seche_cheveux.jpg'),
+(3, '../assets/img/perceuse.jpg'),
+(11, '../assets/img/tondeuse.jpg'),
+(14, '../assets/img/pompe_voiture.jpg'),
+(21, '../assets/img/brosse_lissante.jpg'),
+(26, '../assets/img/robot_patissier.jpg'),
+(31, '../assets/img/ponceuse.jpg'),
+(33, '../assets/img/fouet.jpg');
 
 INSERT INTO emprunt (id_objet, id_membre, date_emprunt, date_retour) VALUES
 (1, 2, '2025-06-01', '2025-06-05'),

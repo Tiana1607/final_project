@@ -108,4 +108,20 @@ function filtre_objets_par_categorie($id_categorie)
 }
 
 
+function get_img_obj($id_objet)
+{
+    $connexion = connection();
+
+    $sql = "SELECT nom_image FROM images_objet WHERE id_objet = %d";
+    $sql = sprintf($sql, $id_objet);
+
+    $resultat = mysqli_query($connexion, $sql);
+    $data = mysqli_fetch_assoc($resultat);
+
+    mysqli_free_result($resultat);
+    deconnection($connexion);
+
+    return $data['nom_image'] ?? '../assets/img/default.png';
+}
+
 ?>

@@ -9,7 +9,7 @@ if (!isset($_SESSION['user'])) {
 $user = $_SESSION['user'];
 
 $list_objet = list_object();
-$emprunter = objet_emprunter(); // Liste des objets empruntés (tableau d'IDs)
+$emprunter = objet_emprunter();
 $list_categ = list_categorie();
 ?>
 <!DOCTYPE html>
@@ -18,6 +18,7 @@ $list_categ = list_categorie();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../assets/css/styles.css">
     <link rel="stylesheet" href="../bootstrap/css/bootstrap.min.css">
     <title>Accueil</title>
 </head>
@@ -46,7 +47,6 @@ $list_categ = list_categorie();
     </header>
 
     <main>
-        <!-- Formulaire de filtre -->
         <section class="mb-4">
             <div class="container d-flex justify-content-center">
                 <form class="row gy-2 gx-3 align-items-center" method="post" action="trait_filtre.php">
@@ -67,7 +67,6 @@ $list_categ = list_categorie();
             </div>
         </section>
 
-        <!-- Affichage des objets -->
         <section>
             <div class="container">
                 <div class="row g-4 justify-content-center">
@@ -76,8 +75,9 @@ $list_categ = list_categorie();
 
                     foreach ($objets_a_afficher as $objet): ?>
                         <article class="col-md-3 col-sm-6 col-12">
+                            <?php $image_obj = get_img_obj($objet['id_objet']);?>
                             <div class="card h-100">
-                                <img src="../images/objets/default.jpg" class="card-img-top" alt="Image Objet">
+                                <img src="<?= $image_obj?>" class="card-img-top" alt="Image Objet" style="height: 260px;">
                                 <div class="card-body">
                                     <h5 class="card-title"><?= htmlspecialchars($objet['nom_objet']) ?></h5>
                                     <?php if (isset($emprunter[$objet['id_objet']])): ?>
@@ -87,7 +87,6 @@ $list_categ = list_categorie();
                                     <?php else: ?>
                                         <p class="text-success">Disponible</p>
                                     <?php endif; ?>
-
                                 </div>
                             </div>
                         </article>
