@@ -1,7 +1,7 @@
-<?php 
-    require 'connexion.php';
+<?php
+require 'connexion.php';
 
-    /* Inscription et connexion */
+/* Inscription et connexion */
 function inscription($email, $nom, $date_de_naissance, $mdp)
 {
     $connexion = connection();
@@ -40,18 +40,18 @@ function list_object()
 
     $liste = array();
 
-    while( $result = mysqli_fetch_assoc($trait))
-    {
+    while ($result = mysqli_fetch_assoc($trait)) {
         $liste[] = $result;
     }
 
     mysqli_free_result($trait);
     deconnection($connexion);
     return $liste;
-} 
+}
 
 
-function objet_emprunter() {
+function objet_emprunter()
+{
     $connexion = connection();
 
     $sql = "SELECT id_objet, date_retour FROM emprunt WHERE date_retour IS NOT NULL";
@@ -78,8 +78,7 @@ function list_categorie()
 
     $liste = array();
 
-    while( $result = mysqli_fetch_assoc($trait))
-    {
+    while ($result = mysqli_fetch_assoc($trait)) {
         $liste[] = $result;
     }
 
@@ -136,57 +135,45 @@ function ajout_img_objets($id_objet, $nom_image)
 }
 
 
-// ... (garder les fonctions existantes)
 
-function ajout_objet($nom_objet, $id_categorie, $id_membre) {
+function ajout_objet($nom_objet, $id_categorie, $id_membre)
+{
     $connexion = connection();
-    
+
     $sql = "INSERT INTO Objet (nom_objet, id_categorie, id_membre) VALUES ('%s', %d, %d)";
     $sql = sprintf($sql, mysqli_real_escape_string($connexion, $nom_objet), $id_categorie, $id_membre);
-    
+
     $result = mysqli_query($connexion, $sql);
     $id_objet = mysqli_insert_id($connexion);
-    
+
     deconnection($connexion);
     return $id_objet;
 }
 
-function traiter_upload_images($id_objet) {
+function traiter_upload_images($id_objet)
+{
     $uploadDir = '../assets/img/objets/';
-    $maxSize = 5 * 1024 * 1024;
     $allowedMimeTypes = ['image/jpeg', 'image/png'];
+    $maxSize = 5 * 1024 * 1024; // 5 MB
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['images'])) {
         foreach ($_FILES['images']['tmp_name'] as $key => $tmpName) {
-            if ($_FILES['images']['error'][$key] !== UPLOAD_ERR_OK) {
-                continue; 
-            }
+            $fileName = $_FILES['images']['name'][$key];
+            $fileSize = $_FILES['images']['size'][$key];
+            $fileType = mime_content_type($tmpName);
 
-            if ($_FILES['images']['size'][$key] > $maxSize) {
-                continue; 
-            }
+            // Vérifier le type et la taille du fichier
+            if (in_array($fileType, $allowedMimeTypes) && $fileSize <= $maxSize) {
+                $destination = $uploadDir . basename($fileName);
 
-            $finfo = finfo_open(FILEINFO_MIME_TYPE);
-            $mime = finfo_file($finfo, $tmpName);
-            finfo_close($finfo);
-            if (!in_array($mime, $allowedMimeTypes)) {
-                continue; 
-            }
-
-            $originalName = pathinfo($_FILES['images']['name'][$key], PATHINFO_FILENAME);
-            $extension = pathinfo($_FILES['images']['name'][$key], PATHINFO_EXTENSION);
-            $newName = $originalName . '_' . uniqid() . '.' . $extension;
-
-            $filename = 'de_' . uniqid() . '.jpg';
-            $destination = '../assets/img/objets/' . $filename;
-
-            if (!move_uploaded_file($tmpName, $destination)) {
-                error_log("Erreur lors du déplacement du fichier : $tmpName vers $destination");
-                return false; // Retourne false si une erreur survient
-            }
-
-            if (move_uploaded_file($tmpName, $uploadDir . $newName)) {
-                ajout_img_objets($id_objet, $newName);
+                // Déplacer le fichier vers le dossier de destination
+                if (move_uploaded_file($tmpName, $destination)) {
+                    // Insérer le chemin de l'image dans la base de données
+                    $connexion = connection();
+                    $sql = "INSERT INTO images_objet (id_objet, nom_image) VALUES ($id_objet, '$destination')";
+                    mysqli_query($connexion, $sql);
+                    deconnection($connexion);
+                }
             }
         }
     }
@@ -228,5 +215,34 @@ function info_membre($id_membre)
     deconnection($connexion);
 
     return $data;
+}
+
+function filtre_objets($id_categorie = 0, $recherche = '', $disponible_seulement = false) {
+    $connexion = connection();
+    
+    // Requête de base
+    $sql = "SELECT o.* FROM Objet o WHERE 1=1";
+    
+    // Filtre par catégorie
+    if ($id_categorie > 0) {
+        $sql .= " AND o.id_categorie = $id_categorie";
+    }
+    
+    // Filtre par recherche
+    if (!empty($recherche)) {
+        $sql .= " AND o.nom_objet LIKE '%$recherche%'";
+    }
+    
+    $result = mysqli_query($connexion, $sql);
+    $objets = array();
+    
+    while ($row = mysqli_fetch_assoc($result)) {
+        $objets[] = $row;
+    }
+    
+    mysqli_free_result($result);
+    deconnection($connexion);
+    
+    return $objets;
 }
 ?>

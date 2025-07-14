@@ -82,18 +82,18 @@ $list_categ = list_categorie();
 
                     foreach ($objets_a_afficher as $objet): ?>
                         <article class="col-md-3 col-sm-6 col-12">
-                            <?php $image_obj = get_img_obj($objet['id_objet']);?>
+                            <?php $image_obj = get_img_obj($objet['id_objet']); ?>
                             <div class="card h-100">
-                                <img src="<?= $image_obj?>" class="card-img-top" alt="Image Objet" style="height: 260px;">
+                                <img src="<?= $image_obj ?>" class="card-img-top" alt="Image Objet" style="height: 260px;">
                                 <div class="card-body">
                                     <h5 class="card-title"><?= htmlspecialchars($objet['nom_objet']) ?></h5>
                                     <?php if (isset($emprunter[$objet['id_objet']])): ?>
                                         <p class="text-danger">Déjà emprunté</p>
-                                        <h6 class="text-muted">Retour prévu le :
-                                            <?= htmlspecialchars($emprunter[$objet['id_objet']]) ?></h6>
+                                        <h6 class="text-muted">Retour prévu le : <?= htmlspecialchars($emprunter[$objet['id_objet']]) ?></h6>
                                     <?php else: ?>
                                         <p class="text-success">Disponible</p>
                                     <?php endif; ?>
+                                    <a href="fiche_objet.php?id_objet=<?= $objet['id_objet'] ?>" class="btn btn-primary mt-2">Voir la fiche</a>
                                 </div>
                             </div>
                         </article>
