@@ -35,13 +35,6 @@ $list_categ = list_categorie();
                     <span class="navbar-toggler-icon"></span>
                 </button>
 
-                <div class="collapse navbar-collapse" id="navbarNav">
-                    <ul class="navbar-nav ms-auto">
-                        <li class="nav-item">
-                            <a href="#" class="nav-link text-white">Accueil</a>
-                        </li>
-                    </ul>
-                </div>
             </div>
         </nav>
     </header>
