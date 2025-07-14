@@ -54,25 +54,33 @@ $list_categ = list_categorie();
             </div>
         </section>
 
-        <section class="mb-4">
-            <div class="container d-flex justify-content-center">
-                <form class="row gy-2 gx-3 align-items-center" method="post" action="trait_filtre.php">
-                    <div class="col-auto">
-                        <label class="visually-hidden" for="autoSizingSelect">Tri</label>
-                        <select class="form-select" id="autoSizingSelect" name="cat">
-                            <option selected value="0">Toutes les catégories</option>
-                            <?php foreach ($list_categ as $cat): ?>
-                                <option value="<?= $cat['id_categorie'] ?>"><?= htmlspecialchars($cat['nom_categorie']) ?>
-                                </option>
-                            <?php endforeach; ?>
-                        </select>
-                    </div>
-                    <div class="col-auto">
-                        <button type="submit" class="btn btn-primary">Rechercher</button>
-                    </div>
-                </form>
-            </div>
-        </section>
+         <!-- Formulaire simplifié -->
+         <section class="mb-4">
+                <div class="container">
+                    <form method="post" action="trait_filtre.php" class="row g-3">
+                        <div class="col-md-4">
+                            <input type="text" name="recherche" class="form-control" placeholder="Rechercher...">
+                        </div>
+                        <div class="col-md-3">
+                            <select name="cat" class="form-select">
+                                <option value="0">Toutes catégories</option>
+                                <?php foreach ($list_categ as $cat): ?>
+                                    <option value="<?= $cat['id_categorie'] ?>"><?= $cat['nom_categorie'] ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-check">
+                                <input type="checkbox" name="dispo" id="dispo" class="form-check-input">
+                                <label for="dispo" class="form-check-label">Disponible seulement</label>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <button type="submit" class="btn btn-primary w-100">Filtrer</button>
+                        </div>
+                    </form>
+                </div>
+            </section>
 
         <section>
             <div class="container">
