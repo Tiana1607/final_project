@@ -44,7 +44,7 @@ $list_categ = list_categorie();
         <section class="profil container mb-4">
             <div class="container text-center">
                 <img src="<?= $user['image_profile']?>" alt="">
-                <h3><?= $user['nom']?></h3>
+                <h3 class="ms-2"><?= $user['nom']?></h3>
             </div>
             <div class="container text-center">
                     <a href="ajout.php"><button type="submit">Ajouter un nouvel objet</button></a>
