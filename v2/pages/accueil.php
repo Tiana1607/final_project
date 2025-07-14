@@ -40,6 +40,20 @@ $list_categ = list_categorie();
     </header>
 
     <main>
+
+        <section class="profil container mb-4">
+            <div class="container text-center">
+                <img src="<?= $user['image_profile']?>" alt="">
+                <h3><?= $user['nom']?></h3>
+            </div>
+            <div class="container text-center">
+                    <a href="ajout.php"><button type="submit">Ajouter un nouvel objet</button></a>
+            </div>
+            <div class="container text-center">
+                    <a href="fiche.php"><button type="submit">Mon profil</button></a>
+            </div>
+        </section>
+
         <section class="mb-4">
             <div class="container d-flex justify-content-center">
                 <form class="row gy-2 gx-3 align-items-center" method="post" action="trait_filtre.php">

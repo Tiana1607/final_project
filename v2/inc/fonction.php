@@ -124,4 +124,109 @@ function get_img_obj($id_objet)
     return $data['nom_image'] ?? '../assets/img/default.png';
 }
 
+function ajout_img_objets($id_objet, $nom_image)
+{
+    $connexion = connection();
+
+    $sql = "INSERT INTO images_objet (id_objet, nom_image) VALUES (%d, '%s')";
+    $sql = sprintf($sql, $id_objet, $nom_image);
+
+    mysqli_query($connexion, $sql);
+    deconnection($connexion);
+}
+
+
+// ... (garder les fonctions existantes)
+
+function ajout_objet($nom_objet, $id_categorie, $id_membre) {
+    $connexion = connection();
+    
+    $sql = "INSERT INTO Objet (nom_objet, id_categorie, id_membre) VALUES ('%s', %d, %d)";
+    $sql = sprintf($sql, mysqli_real_escape_string($connexion, $nom_objet), $id_categorie, $id_membre);
+    
+    $result = mysqli_query($connexion, $sql);
+    $id_objet = mysqli_insert_id($connexion);
+    
+    deconnection($connexion);
+    return $id_objet;
+}
+
+function traiter_upload_images($id_objet) {
+    $uploadDir = '../assets/img/objets/';
+    $maxSize = 5 * 1024 * 1024;
+    $allowedMimeTypes = ['image/jpeg', 'image/png'];
+
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['images'])) {
+        foreach ($_FILES['images']['tmp_name'] as $key => $tmpName) {
+            if ($_FILES['images']['error'][$key] !== UPLOAD_ERR_OK) {
+                continue; 
+            }
+
+            if ($_FILES['images']['size'][$key] > $maxSize) {
+                continue; 
+            }
+
+            $finfo = finfo_open(FILEINFO_MIME_TYPE);
+            $mime = finfo_file($finfo, $tmpName);
+            finfo_close($finfo);
+            if (!in_array($mime, $allowedMimeTypes)) {
+                continue; 
+            }
+
+            $originalName = pathinfo($_FILES['images']['name'][$key], PATHINFO_FILENAME);
+            $extension = pathinfo($_FILES['images']['name'][$key], PATHINFO_EXTENSION);
+            $newName = $originalName . '_' . uniqid() . '.' . $extension;
+
+            $filename = 'de_' . uniqid() . '.jpg';
+            $destination = '../assets/img/objets/' . $filename;
+
+            if (!move_uploaded_file($tmpName, $destination)) {
+                error_log("Erreur lors du déplacement du fichier : $tmpName vers $destination");
+                return false; // Retourne false si une erreur survient
+            }
+
+            if (move_uploaded_file($tmpName, $uploadDir . $newName)) {
+                ajout_img_objets($id_objet, $newName);
+            }
+        }
+    }
+}
+
+function info_membre($id_membre)
+{
+    $connexion = connection();
+
+    $sql = "SELECT m.*, o.id_objet, o.nom_objet, c.nom_categorie
+            FROM Membre m
+            JOIN Objet o ON m.id_membre = o.id_membre
+            JOIN categorie_objet c ON o.id_categorie = c.id_categorie
+            WHERE m.id_membre = %d";
+    $sql = sprintf($sql, $id_membre);
+
+    $resultat = mysqli_query($connexion, $sql);
+
+    $data = [];
+    $data['objets'] = [];
+    while ($row = mysqli_fetch_assoc($resultat)) {
+        if (empty($data['id_membre'])) {
+            $data['id_membre'] = $row['id_membre'];
+            $data['nom'] = $row['nom'];
+            $data['email'] = $row['email'];
+            $data['date_naissance'] = $row['date_naissance'];
+            $data['image_profile'] = $row['image_profile'];
+        }
+        if (!empty($row['id_objet'])) {
+            $data['objets'][] = [
+                'id_objet' => $row['id_objet'],
+                'nom_objet' => $row['nom_objet'],
+                'nom_categorie' => $row['nom_categorie']
+            ];
+        }
+    }
+
+    mysqli_free_result($resultat);
+    deconnection($connexion);
+
+    return $data;
+}
 ?>
